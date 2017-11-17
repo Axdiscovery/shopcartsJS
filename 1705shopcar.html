@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style>
+		*{
+			padding: 0;
+			margin: 0;
+			box-sizing: border-box;
+		}
+		ul,li{
+			list-style: none;
+		}
+		a{
+			text-decoration: none;
+		}
+		#wrap{
+			width: 100%;
+			overflow: hidden;
+		}
+		li{
+		    width: 100%;
+			height: 100px;	
+			overflow: hidden;
+			border: 1px  solid #ccc;
+		}
+		li img{
+
+			width: 100px;
+			height: 100px;
+		}
+		button{
+			width: 50px;
+			height: 50px;
+		}
+		p{
+			float: left;
+		}
+	</style>
+</head>
+<body>
+	<a href="1705shoplist.html">继续买</a>
+	<div id="wrap">
+	
+		
+	</div>
+</body>
+</html>
+<script src="js/jquery-1.8.3.min.js"></script>
+<script>
+	var str="";
+	$.ajax({
+		url: ' getShoppingCart.php',
+		type: 'get',
+		data: {
+			vipName: 'q'
+		},
+		success:function (data) {
+			var d=eval(data)
+		 for (var i = 0; i < d.length; i++) {
+		 	str+=	'<li>' +
+			'<p>' +
+				'<img src="'+d[i].beiyong1+'" alt="">' +
+			'</p>' +
+			
+			'<p>商品名字：'+d[i].goodsName+'------</p>' +
+			'<p>商品数量：'+getCookie(d[i].goodsId)+'---</p>' +
+			'<p>商品单价：'+d[i].goodsPrice+'----</p>' +
+			'<p>商品总价：'+d[i].goodsPrice*getCookie(d[i].goodsId)+'-----</p>' +
+			'<p><button class="del" goodsid="'+d[i].goodsId+'">删除</button></p>' +
+		'</li>';
+		 }
+			$("#wrap").html(str)
+		}
+	})
+	
+
+    $("#wrap").on('click','.del',function(){
+    	var good=$(this).attr("goodsid")
+        setCookie(good,good,-1)
+    	
+    	$.ajax({
+    		url: 'deleteGoods.php',
+    		type: 'get',
+    		data: {
+    			vipName: 'q',
+    			goodsId:good
+    		},
+    		success:function(data){
+    			if(data=="1"){ 
+
+					alert("删除成功");
+				    location.reload()
+				}else{
+					alert("删除失败")
+				}
+    		}
+    	})
+    	
+    	
+    })
+function setCookie(c_name,value,expiredays){//这个函数中的参数存有 cookie 的名称、值以及过期天数。
+	var exdate=new Date()
+	exdate.setDate(exdate.getDate()+expiredays)
+	document.cookie=c_name+ "=" +escape(value)+
+	((expiredays==null) ? "" : ";expires="+exdate.toGMTString())+";path=/;";
+}
+	function getCookie(name){//取cookies函数     
+    
+       var arr = document.cookie.match(new RegExp("(^| )"+name+"=([^;]*)(;|$)")); 
+       if(arr != null) return unescape(arr[2]); return null; 
+
+    } 
+
+    function delCookie(name){ //删除cookie  
+    
+       var exp = new Date(); 
+       exp.setTime(exp.getTime() - 1); 
+       var cval=getCookie(name); 
+       if(cval!=null) document.cookie= name + "="+cval+";expires="+exp.toGMTString(); 
+    } 
+</script>
